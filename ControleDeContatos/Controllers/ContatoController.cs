@@ -13,8 +13,8 @@ namespace ControleDeContatos.Controllers
         }
         public IActionResult Index()
         {
-            var buscarTodos = _contatoRepository.BuscarTodos();
-            return View(buscarTodos);
+            var contatos = _contatoRepository.BuscarTodos();
+            return View(contatos);
         }
 
         public IActionResult Criar()

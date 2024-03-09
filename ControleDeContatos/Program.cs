@@ -1,5 +1,6 @@
 using ControleDeContatos.Data;
 using ControleDeContatos.Repository;
+using ControleDeUsuarios.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddControllersWithViews();
 string connectionString = builder.Configuration.GetConnectionString("ConexaoPadrao");
 builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer(connectionString));
 builder.Services.AddScoped<IContatoRepository, ContatoRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
 var app = builder.Build();
 
