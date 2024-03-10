@@ -12,6 +12,11 @@ namespace ControleDeUsuarios.Repository
             _context = context;
         }
 
+        public UsuarioModel BuscarPorLogin(string login)
+        {
+            return _context.Usuarios.FirstOrDefault(l => l.Login.ToUpper() == login.ToUpper());
+        }
+
         public UsuarioModel BuscarPorId(int id)
         {
             return _context.Usuarios.FirstOrDefault(c => c.Id == id);
@@ -65,5 +70,6 @@ namespace ControleDeUsuarios.Repository
 
             return true;
         }
+
     }
 }
