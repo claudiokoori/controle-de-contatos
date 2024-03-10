@@ -1,8 +1,7 @@
 ﻿using ControleDeContatos.Data;
 using ControleDeContatos.Models;
-using ControleDeContatos.Repository;
 
-namespace ControleDeUsuarios.Repository
+namespace ControleDeContatos.Repository
 {
     public class UsuarioRepository : IUsuarioRepository
     {
