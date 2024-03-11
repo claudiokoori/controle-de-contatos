@@ -9,17 +9,21 @@ namespace ControleDeContatos.Controllers
     [PaginaParaUsuarioLogado]
     public class ContatoController : Controller
     {
-        private readonly IContatoRepository _contatoRepository;
+        private readonly IContatoRepository _contatoRepositorio;
         private readonly ISessao _sessao;
-        public ContatoController(IContatoRepository contatoRepository, ISessao sessao)
+
+        public ContatoController(IContatoRepository contatoRepositorio,
+                                 ISessao sessao)
         {
-            _contatoRepository = contatoRepository;
+            _contatoRepositorio = contatoRepositorio;
             _sessao = sessao;
         }
+
         public IActionResult Index()
         {
-            UsuarioModel usuarioLogado = _sessao.BuscarSessaoDoUsuario(); 
-            var contatos = _contatoRepository.BuscarTodos(usuarioLogado.Id);
+            UsuarioModel usuarioLogado = _sessao.BuscarSessaoDoUsuario();
+            List<ContatoModel> contatos = _contatoRepositorio.BuscarTodos(usuarioLogado.Id);
+
             return View(contatos);
         }
 
@@ -30,13 +34,13 @@ namespace ControleDeContatos.Controllers
 
         public IActionResult Editar(int id)
         {
-            var contato = _contatoRepository.BuscarPorId(id);
+            ContatoModel contato = _contatoRepositorio.BuscarPorId(id);
             return View(contato);
         }
 
         public IActionResult ApagarConfirmacao(int id)
         {
-            var contato = _contatoRepository.BuscarPorId(id);
+            ContatoModel contato = _contatoRepositorio.BuscarPorId(id);
             return View(contato);
         }
 
@@ -44,20 +48,14 @@ namespace ControleDeContatos.Controllers
         {
             try
             {
-                var apagado = _contatoRepository.Apagar(id);
-                if (apagado)
-                {
-                    TempData["MensagemSucesso"] = "Contato apagado com sucesso!";
-                }
-                else
-                {
-                    TempData["MensagemErro"] = $"Não foi possível apagar o contato, tente novamente";
-                }
+                bool apagado = _contatoRepositorio.Apagar(id);
+
+                if (apagado) TempData["MensagemSucesso"] = "Contato apagado com sucesso!"; else TempData["MensagemErro"] = "Ops, não conseguimos cadastrar seu contato, tente novamante!";
                 return RedirectToAction("Index");
             }
-            catch (Exception e)
+            catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Não foi possível apagar o contato, tente novamente, detalhe do erro: {e.Message}";
+                TempData["MensagemErro"] = $"Ops, não conseguimos apagar seu contato, tente novamante, detalhe do erro: {erro.Message}";
                 return RedirectToAction("Index");
             }
         }
@@ -72,23 +70,23 @@ namespace ControleDeContatos.Controllers
                     UsuarioModel usuarioLogado = _sessao.BuscarSessaoDoUsuario();
                     contato.UsuarioId = usuarioLogado.Id;
 
-                    _contatoRepository.Adicionar(contato);
+                    contato = _contatoRepositorio.Adicionar(contato);
+
                     TempData["MensagemSucesso"] = "Contato cadastrado com sucesso!";
                     return RedirectToAction("Index");
                 }
-                return View(contato);
 
+                return View(contato);
             }
-            catch (Exception e)
+            catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Não foi possível cadastrar o contato, tente novamente, detalhe do erro: {e.Message}";
+                TempData["MensagemErro"] = $"Ops, não conseguimos cadastrar seu contato, tente novamante, detalhe do erro: {erro.Message}";
                 return RedirectToAction("Index");
             }
-
         }
 
         [HttpPost]
-        public IActionResult Alterar(ContatoModel contato)
+        public IActionResult Editar(ContatoModel contato)
         {
             try
             {
@@ -97,19 +95,19 @@ namespace ControleDeContatos.Controllers
                     UsuarioModel usuarioLogado = _sessao.BuscarSessaoDoUsuario();
                     contato.UsuarioId = usuarioLogado.Id;
 
-                    _contatoRepository.Atualizar(contato);
-                    TempData["MensagemSucesso"] = "Contato atualizado com sucesso!";
+                    contato = _contatoRepositorio.Atualizar(contato);
+                    TempData["MensagemSucesso"] = "Contato alterado com sucesso!";
                     return RedirectToAction("Index");
                 }
 
-                return View("Editar", contato);
+                return View(contato);
             }
-            catch (Exception e)
+            catch (Exception erro)
             {
-                TempData["MensagemErro"] = $"Não foi possível atualizar o contato, tente novamente, detalhe do erro: {e.Message}";
+                TempData["MensagemErro"] = $"Ops, não conseguimos atualizar seu contato, tente novamante, detalhe do erro: {erro.Message}";
                 return RedirectToAction("Index");
             }
-
         }
+
     }
 }

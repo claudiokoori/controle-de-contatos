@@ -10,9 +10,11 @@ namespace ControleDeContatos.Controllers
     {
 
         private readonly IUsuarioRepository _usuarioRepository;
-        public UsuarioController(IUsuarioRepository usuarioRepository)
+        private readonly IContatoRepository _contatoRepository;
+        public UsuarioController(IUsuarioRepository usuarioRepository, IContatoRepository contatoRepository)
         {
             _usuarioRepository = usuarioRepository;
+            _contatoRepository = contatoRepository;
         }
         public IActionResult Index()
         {
@@ -57,6 +59,12 @@ namespace ControleDeContatos.Controllers
                 TempData["MensagemErro"] = $"Não foi possível apagar o usuario, tente novamente, detalhe do erro: {e.Message}";
                 return RedirectToAction("Index");
             }
+        }
+
+        public IActionResult ListarContatosPorUsuarioId(int id)
+        {
+            List<ContatoModel> contatos = _contatoRepository.BuscarTodos(id);
+            return PartialView("_ContatosUsuario", contatos);
         }
 
         [HttpPost]
